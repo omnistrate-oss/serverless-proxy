@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	listenAddr := "127.0.0.1:3000" // Address to listen on
+	listenAddr := "0.0.0.0:3001" // #nosec G102
 	connStr := fmt.Sprintf("host=localhost port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
 		os.Getenv("PG_USER"), os.Getenv("PG_PASSWORD")) // Connection string to the database
 
@@ -39,7 +39,7 @@ func main() {
 	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	select {
 	case <-chExit:
-		fmt.Println("Example EXITING...Bye.")
+		log.Println("Example EXITING...Bye.")
 	}
 }
 

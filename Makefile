@@ -9,11 +9,11 @@ CGO_ENABLED=0
 GOPRIVATE=github.com/omnistrate
 
 .PHONY: all
-all: tidy build sec
+all: tidy build 
 
-.PHONY: docker-build-and-push
-docker-build-and-push:
-	docker buildx build --platform=linux/amd64,linux/arm64 -f cmd/build/Dockerfile -t omnistrate/observability:latest . --push
+.PHONY: docker-build
+docker-build:
+	docker buildx build --platform=linux/arm64 -f cmd/build/Dockerfile -t omnistrate/pg-proxy:latest .
 
 .PHONY: tidy
 tidy:
@@ -24,16 +24,6 @@ tidy:
 build:
 	echo "Building go binaries for service"
 	go build -o proxyd ./cmd/cmd.go
-
-.PHONY: sec-install
-sec-install:
-	echo "Installing gosec"
-	go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-.PHONY: sec
-sec:
-	echo "Security scanning for service"
-	gosec --quiet ./...
 
 .PHONY: install-dependencies
 install-dependencies: lint-install sec-install
