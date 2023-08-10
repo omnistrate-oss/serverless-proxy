@@ -1,0 +1,33 @@
+#apiVersion: apps/v3
+#kind: Deployment
+#metadata:
+#  name: sidecar-monitor
+#  namespace: monitoring-sidecar
+#spec:
+#  replicas: 1
+#  template:
+#    metadata:
+#      labels:
+#        app: sidecar-monitor
+#        version: v1
+#        "vector.dev/exclude": "true"
+#    spec:
+#      serviceAccountName: endpoint-monitor-agent
+#      containers:
+#        - name: sidecar-monitor
+#          # The good practice would be to pin the version.
+#          image: endpoint-monitor-agent
+#          imagePullPolicy: IfNotPresent
+#          args:
+#            - -conf=/data/config.yaml
+#          volumeMounts:
+#            - mountPath: /data
+#              name: cfg
+#      volumes:
+#        - name: cfg
+#          configMap:
+#            name: sidecar-monitor-cfg
+#  selector:
+#    matchLabels:
+#      app: sidecar-monitor
+#      version: v1

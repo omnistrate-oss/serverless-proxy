@@ -15,7 +15,9 @@ import (
 func main() {
 	listenAddr := "0.0.0.0:3001" // #nosec G102
 	connStr := fmt.Sprintf("host=localhost port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
-		os.Getenv("PG_USER"), os.Getenv("PG_PASSWORD")) // Connection string to the database
+		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")) // Connection string to the database
+
+	log.Printf("Connecting to %s", connStr)
 
 	listener, err := net.Listen("tcp", listenAddr)
 	if err != nil {
