@@ -3,7 +3,7 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   # Name the persistent chain
-  name: postgresdb-persistent-volume
+  name: postgresdb-persistent-volume-02
   # Labels for identifying PV
   labels:
     type: local
@@ -12,10 +12,11 @@ spec:
   storageClassName: manual
   capacity:
     # PV Storage capacity
-    storage: 1Gi
+    storage: 200Mi
   # A db can write and read from volumes to multiple pods
   accessModes:
     - ReadWriteMany
   # Specify the path to persistent the volumes  
   hostPath:
-    path: "/data/db"
+    path: "/data/db2"
+    

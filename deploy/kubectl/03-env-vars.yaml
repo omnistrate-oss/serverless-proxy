@@ -9,7 +9,7 @@ data:
   LOG_LEVEL: "debug"
   LOG_FORMAT: "json"
 
-  NODE_NAME: "sidecar-exp"
+  NODE_NAME: "pg-proxy"
   HOST_CLUSTER_ID: "host-cluster-id"
   INSTANCE_ID: "instance-id"
   RESOURCE_ID: "resource-id"

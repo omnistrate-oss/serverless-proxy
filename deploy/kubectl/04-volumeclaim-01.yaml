@@ -1,0 +1,17 @@
+apiVersion: v1
+# define a resource for volume chain
+kind: PersistentVolumeClaim
+metadata:
+  # Name the volume chain
+  name: db-persistent-volume-claim
+  namespace: monitoring-sidecar
+spec:
+  storageClassName: manual
+  accessModes:
+    # Allow ReadWrite to multiple pods
+    - ReadWriteMany
+  # PVC requesting resources
+  resources:
+    requests:
+      # the PVC storage
+      storage: 200Mi

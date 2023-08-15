@@ -1,7 +1,7 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: sidecar-exp
+  name: pg-proxy
   namespace: monitoring-sidecar
   labels:
     app: proxy-app
@@ -11,11 +11,19 @@ spec:
   shareProcessNamespace: true
 
   volumes:
-    - name: db-data
+    - name: db-data-01
       persistentVolumeClaim:
         # reference the PersistentVolumeClaim
         claimName: db-persistent-volume-claim
-
+    - name: db-data-02
+      persistentVolumeClaim:
+        # reference the PersistentVolumeClaim
+        claimName: db-persistent-volume-claim-02    
+    - name: scripts
+      configMap:
+        name: sidecar-monitor-scripts
+        defaultMode: 0555  
+  
   containers:
     - name: proxy-app
       image: omnistrate/pg-proxy:latest
@@ -42,9 +50,37 @@ spec:
       volumeMounts:
         # The volume mounts  for the container
         - mountPath: /var/lib/postgres/data
-          name: db-data  
+          name: db-data-01  
       ports:
         - containerPort: 5432
+    - name: mysql2
+      image: mysql:latest
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: MYSQL_USER
+          value: "postgres"
+        - name: MYSQL_PASSWORD
+          value: "9uh4CcKZ7SG77p"
+        - name: MYSQL_DATABASE
+          value: "omnistratemetadatadb"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "9uh4CcKZ7SG77p"
+          
+      volumeMounts:
+        # The volume mounts  for the container
+        - mountPath: /var/lib/mysql
+          name: db-data-02
+      ports:
+        - containerPort: 3306      
+    - name: sidecar
+      image: monitor-sidecar
+      imagePullPolicy: Never
+      envFrom:
+        - configMapRef:
+            name: sidecar-monitor-env-vars
+      volumeMounts:
+        - name: scripts
+          mountPath: /etc/monitoring/scripts
         
 
    # - name: sidecar

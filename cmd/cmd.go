@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"log"
 	"net"
@@ -12,12 +13,16 @@ import (
 	"syscall"
 )
 
+var (
+	count int64 = 0
+)
+
 func main() {
 	listenAddr := "0.0.0.0:3001" // #nosec G102
 	connStr := fmt.Sprintf("host=localhost port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
 		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")) // Connection string to the database
 
-	log.Printf("Connecting to %s", connStr)
+	connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 
 	listener, err := net.Listen("tcp", listenAddr)
 	if err != nil {
@@ -34,7 +39,7 @@ func main() {
 			continue
 		}
 
-		go handleClient(clientConn, connStr)
+		go handleClient(clientConn, connStr, connStr2)
 	}
 
 	chExit := make(chan os.Signal, 1)
@@ -45,14 +50,24 @@ func main() {
 	}
 }
 
-func handleClient(clientConn net.Conn, connStr string) {
+func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
 	defer clientConn.Close()
+	var db *sql.DB
+	var err error
+	if count%2 == 0 {
+		db, err = sql.Open("postgres", connStr)
+		log.Printf("Connecting to %s", connStr)
+	} else {
+		db, err = sql.Open("mysql", connStr2)
+		log.Printf("Connecting to %s", connStr2)
 
-	db, err := sql.Open("postgres", connStr)
+	}
+
 	if err != nil {
 		log.Printf("Failed to connect to the database: %v", err)
 		return
 	}
+	count++
 	defer db.Close()
 
 	dbConn, err := db.Conn(context.Background())
