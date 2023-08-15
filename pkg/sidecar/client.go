@@ -20,7 +20,7 @@ func (c *Client) SendAPIRequest() (*http.Response, error) {
 
 	resp, err := http.Get("http://127.0.0.1:49750/getBackendsStatus")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Failed to get backends endpoints")
 	}
 	log.Printf("Response: %v", resp)
 

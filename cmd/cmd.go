@@ -29,39 +29,43 @@ func main() {
 	var response *http.Response
 	var err error
 	if response, err = client.SendAPIRequest(); err != nil || response.StatusCode != 200 {
-		log.Printf("Failed toget backends endpoints")
-		return
+		log.Printf("Failed to get backends endpoints")
 	}
 
 	defer func() {
 		if closeErr := response.Body.Close(); closeErr != nil {
-			log.Fatal("Failed to close response body: %v", closeErr)
+			log.Printf("Failed to close response body: %v", closeErr)
 		}
 	}()
 
-	var body []byte
-	if body, err = io.ReadAll(response.Body); err != nil {
-		log.Fatal(err, "Failed to read response body")
-		return
+	var connStr string // Connection string to the database
+	if response == nil || response.StatusCode != 200 {
+		fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
+			"nohost.com", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+	} else {
+
+		var body []byte
+		if body, err = io.ReadAll(response.Body); err != nil {
+			log.Printf("Failed to read response body")
+		}
+
+		responseBody := &sidecar.BackendsStatus{}
+
+		if err = json.Unmarshal(body, &responseBody); err != nil {
+			log.Printf("Failed to unmarshal response body")
+		}
+
+		log.Print(responseBody)
+
+		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
+			responseBody.Backends[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
-
-	responseBody := &sidecar.BackendsStatus{}
-
-	if err = json.Unmarshal(body, &responseBody); err != nil {
-		log.Fatal(err, "Failed to unmarshal response body")
-		return
-	}
-
-	log.Print(responseBody)
-
-	connStr := fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
-		responseBody.Backends[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")) // Connection string to the database
 
 	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 
 	listener, err := net.Listen("tcp", listenAddr)
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		log.Printf("Failed to listen: %v", err)
 	}
 	defer listener.Close()
 
