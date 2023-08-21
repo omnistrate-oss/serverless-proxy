@@ -24,6 +24,37 @@ import (
 func main() {
 	listenAddr := "0.0.0.0:3001" // #nosec G102
 
+	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+
+	listener, err := net.Listen("tcp", listenAddr)
+	if err != nil {
+		log.Printf("Failed to listen: %v", err)
+	}
+	defer listener.Close()
+
+	log.Printf("Listening on %s", listenAddr)
+
+	for {
+		clientConn, err := listener.Accept()
+		if err != nil {
+			log.Printf("Failed to accept client connection: %v", err)
+			continue
+		}
+
+		//go handleClient(clientConn, connStr, connStr2)
+		go handleClient(clientConn)
+	}
+
+	chExit := make(chan os.Signal, 1)
+	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+	select {
+	case <-chExit:
+		log.Println("Example EXITING...Bye.")
+	}
+}
+
+// func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
+func handleClient(clientConn net.Conn) {
 	var client = sidecar.NewClient(context.Background())
 
 	var response *http.Response
@@ -31,12 +62,6 @@ func main() {
 	if response, err = client.SendAPIRequest(); err != nil || response.StatusCode != 200 {
 		log.Printf("Failed to get backends endpoints")
 	}
-
-	defer func() {
-		if closeErr := response.Body.Close(); closeErr != nil {
-			log.Printf("Failed to close response body: %v", closeErr)
-		}
-	}()
 
 	var connStr string // Connection string to the database
 	if response == nil || response.StatusCode != 200 {
@@ -61,40 +86,18 @@ func main() {
 			responseBody.Backends[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
 
-	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
-
-	listener, err := net.Listen("tcp", listenAddr)
-	if err != nil {
-		log.Printf("Failed to listen: %v", err)
-	}
-	defer listener.Close()
-
-	log.Printf("Listening on %s", listenAddr)
-
-	for {
-		clientConn, err := listener.Accept()
-		if err != nil {
-			log.Printf("Failed to accept client connection: %v", err)
-			continue
+	defer func() {
+		if response != nil {
+			if closeErr := response.Body.Close(); closeErr != nil {
+				log.Printf("Failed to close response body: %v", closeErr)
+			}
 		}
 
-		//go handleClient(clientConn, connStr, connStr2)
-		go handleClient(clientConn, connStr)
-	}
+		clientConn.Close()
+	}()
 
-	chExit := make(chan os.Signal, 1)
-	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
-	select {
-	case <-chExit:
-		log.Println("Example EXITING...Bye.")
-	}
-}
-
-// func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
-func handleClient(clientConn net.Conn, connStr string) {
-	defer clientConn.Close()
 	var db *sql.DB
-	var err error
+
 	//if count%2 == 0 {
 	db, err = sql.Open("postgres", connStr)
 	log.Printf("Connecting to %s", connStr)
