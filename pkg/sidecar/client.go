@@ -18,9 +18,9 @@ func NewClient(ctx context.Context) *Client {
 
 func (c *Client) SendAPIRequest() (*http.Response, error) {
 
-	resp, err := http.Get("http://127.0.0.1:49750/getBackendsStatus")
+	resp, err := http.Get("http://127.0.0.1:49750/instanceStatus/ports/123")
 	if err != nil {
-		log.Printf("Failed to get backends endpoints")
+		log.Printf("Failed to get backends endpoints: %v", err)
 	}
 	log.Printf("Response: %v", resp)
 

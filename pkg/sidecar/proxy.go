@@ -1,16 +1,21 @@
 package sidecar
 
-import "time"
+import (
+	"github.com/go-openapi/strfmt"
+)
 
-type BackendsStatus struct {
-	Backends              []BackendStatus `json:"backends"`
-	LastObservedTimestamp time.Time       `json:"lastObservedTimestamp"`
+type InstanceStatus struct {
+	InstanceID            string             `json:"instanceId"`
+	ServiceComponents     []ServiceComponent `json:"serviceComponents"`
+	Status                Status             `json:"status"`
+	LastObservedTimestamp strfmt.DateTime    `json:"lastObservedTimestamp"`
 }
 
-type BackendStatus struct {
-	InstanceName   string         `json:"instanceName"`
-	Status         Status         `json:"status"`
+type ServiceComponent struct {
+	ID             string         `json:"id"`
+	Alias          string         `json:"alias"`
 	NodesEndpoints []NodeEndpoint `json:"nodesEndpoints"`
+	Ports          []int          `json:"ports"`
 }
 
 type NodeEndpoint struct {
@@ -22,9 +27,9 @@ type NodeEndpoint struct {
 type Status string
 
 const (
-	ACTIVE  Status = "ACTIVE"
-	WAKEUP  Status = "WAKEUP"
-	PAUSED  Status = "PAUSED"
-	FAILED  Status = "FAILED"
-	UNKNOWN Status = "UNKNOWN"
+	ACTIVE   Status = "ACTIVE"
+	STARTING Status = "STARTING"
+	PAUSED   Status = "PAUSED"
+	FAILED   Status = "FAILED"
+	UNKNOWN  Status = "UNKNOWN"
 )

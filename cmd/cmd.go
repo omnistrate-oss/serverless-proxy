@@ -74,7 +74,7 @@ func handleClient(clientConn net.Conn) {
 			log.Printf("Failed to read response body")
 		}
 
-		responseBody := &sidecar.BackendsStatus{}
+		responseBody := &sidecar.InstanceStatus{}
 
 		if err = json.Unmarshal(body, &responseBody); err != nil {
 			log.Printf("Failed to unmarshal response body")
@@ -83,7 +83,7 @@ func handleClient(clientConn net.Conn) {
 		log.Print(responseBody)
 
 		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
-			responseBody.Backends[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+			responseBody.ServiceComponents[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
 
 	defer func() {
