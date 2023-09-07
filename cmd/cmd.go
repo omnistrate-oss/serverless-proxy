@@ -82,6 +82,15 @@ func handleClient(clientConn net.Conn) {
 
 		log.Print(responseBody)
 
+		switch responseBody.Status {
+		case sidecar.PAUSED:
+			log.Printf("Instance is paused, waking up instance")
+			return
+		case sidecar.STARTING:
+			log.Printf("Instance is starting, waiting for instance to start")
+			return
+		}
+
 		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
 			responseBody.ServiceComponents[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
