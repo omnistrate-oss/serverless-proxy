@@ -22,27 +22,49 @@ import (
 )**/
 
 func main() {
-	listenAddr := "0.0.0.0:3001" // #nosec G102
+	listenAddr := "0.0.0.0:3002"  // #nosec G102
+	listenAddr2 := "0.0.0.0:3001" // #nosec G102
 
 	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 
 	listener, err := net.Listen("tcp", listenAddr)
+	listener2, err := net.Listen("tcp", listenAddr2)
 	if err != nil {
 		log.Printf("Failed to listen: %v", err)
 	}
-	defer listener.Close()
+	defer func() {
+		listener.Close()
+		listener2.Close()
+	}()
 
 	log.Printf("Listening on %s", listenAddr)
+	log.Printf("Listening on %s", listenAddr2)
 
 	for {
-		clientConn, err := listener.Accept()
-		if err != nil {
-			log.Printf("Failed to accept client connection: %v", err)
-			continue
+		var innerError error
+		clientConn, innerError := listener.Accept()
+		if innerError != nil {
+			log.Printf("Failed to accept client connection: %v", innerError)
+			os.Exit(1)
 		}
+
+		clientConn2, innerError := listener2.Accept()
+		if innerError != nil {
+			log.Printf("Failed to accept client connection: %v", innerError)
+			os.Exit(1)
+		}
+
+		go func() {
+			if _, err = clientConn2.Write([]byte("Health Check Succeed\n")); err != nil {
+				log.Printf("Failed to write to client: %v", err)
+			}
+
+			defer clientConn2.Close()
+		}()
 
 		//go handleClient(clientConn, connStr, connStr2)
 		go handleClient(clientConn)
+
 	}
 
 	chExit := make(chan os.Signal, 1)
@@ -50,22 +72,33 @@ func main() {
 	select {
 	case <-chExit:
 		log.Println("Example EXITING...Bye.")
+		os.Exit(1)
 	}
 }
 
 // func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
 func handleClient(clientConn net.Conn) {
+	// Make a buffer to hold incoming data.
+	buf := make([]byte, 1024)
+	// Read the incoming connection into the buffer.
+	reqLen, err := clientConn.Read(buf)
+
+	if err != nil {
+		fmt.Println("Error reading:", err.Error())
+	}
+	reqLen = reqLen
+	fmt.Printf("Received data: %v\n", string(buf[:reqLen]))
+
 	var client = sidecar.NewClient(context.Background())
 
 	var response *http.Response
-	var err error
 	if response, err = client.SendAPIRequest(); err != nil || response.StatusCode != 200 {
 		log.Printf("Failed to get backends endpoints")
 	}
 
 	var connStr string // Connection string to the database
 	if response == nil || response.StatusCode != 200 {
-		fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
+		fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
 			"nohost.com", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	} else {
 
@@ -85,13 +118,19 @@ func handleClient(clientConn net.Conn) {
 		switch responseBody.Status {
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
+			if _, err = clientConn.Write([]byte("Instance is paused, waking up instance\n")); err != nil {
+				log.Printf("Failed to write to client: %v", err)
+			}
 			return
 		case sidecar.STARTING:
-			log.Printf("Instance is starting, waiting for instance to start")
+			log.Printf("Instance is starting, waiting for instance to be available")
+			if _, err = clientConn.Write([]byte("Instance is starting, waiting for instance to be available\n")); err != nil {
+				log.Printf("Failed to write to client: %v", err)
+			}
 			return
 		}
 
-		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=omnistratemetadatadb sslmode=disable password=%s",
+		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
 			responseBody.ServiceComponents[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
 
@@ -131,6 +170,7 @@ func handleClient(clientConn net.Conn) {
 	defer dbConn.Close()
 
 	done := make(chan struct{})
+
 	go func() {
 		//Using select 1 to mimic data parse and transferring
 		_, err := dbConn.PrepareContext(context.Background(), "SELECT 1")
@@ -140,15 +180,12 @@ func handleClient(clientConn net.Conn) {
 		done <- struct{}{}
 	}()
 
-	_, err = clientConn.Write([]byte("Ready to forward traffic\n"))
-	if err != nil {
-		log.Printf("Failed to write to client: %v", err)
-		return
-	}
-
 	select {
 	case <-done:
 		log.Printf("Traffic forwarding completed to %s", connStr)
+		if _, err = clientConn.Write([]byte("Connected to backend\n")); err != nil {
+			log.Printf("Failed to write to client: %v", err)
+		}
 		return
 	}
 }
