@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -130,8 +131,16 @@ func handleClient(clientConn net.Conn) {
 			return
 		}
 
+		var hostName string
+		for _, sc := range responseBody.ServiceComponents {
+			if strings.Contains(sc.Alias, "postgres") {
+				hostName = sc.NodesEndpoints[0].Endpoint
+				break
+			}
+		}
+
 		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
-			responseBody.ServiceComponents[0].NodesEndpoints[0].Endpoint, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+			hostName, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 	}
 
 	defer func() {
