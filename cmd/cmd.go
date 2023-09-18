@@ -23,8 +23,8 @@ import (
 )**/
 
 func main() {
-	listenAddr := "0.0.0.0:3002"  // #nosec G102
-	listenAddr2 := "0.0.0.0:3001" // #nosec G102
+	listenAddr := "0.0.0.0:30001"  // #nosec G102
+	listenAddr2 := "0.0.0.0:30000" // #nosec G102
 
 	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 
