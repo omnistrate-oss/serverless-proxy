@@ -15,7 +15,6 @@ type ServiceComponent struct {
 	ID             string         `json:"id"`
 	Alias          string         `json:"alias"`
 	NodesEndpoints []NodeEndpoint `json:"nodesEndpoints"`
-	Ports          []int          `json:"ports"`
 }
 
 type NodeEndpoint struct {
