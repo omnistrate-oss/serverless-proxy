@@ -23,69 +23,48 @@ import (
 )**/
 
 func main() {
-	listenAddr3 := "0.0.0.0:30009" // #nosec G102
-	listenAddr2 := "0.0.0.0:30005" // #nosec G102
-	listenAddr1 := "0.0.0.0:30001" // #nosec G102
-	listenAddr := "0.0.0.0:30000"  // #nosec G102
+	listenAddr := "0.0.0.0:30001"  // #nosec G102
+	listenAddr2 := "0.0.0.0:30000" // #nosec G102
 
 	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
 
-	listener3, err := net.Listen("tcp", listenAddr3)
-	listener2, err := net.Listen("tcp", listenAddr2)
-	listener1, err := net.Listen("tcp", listenAddr1)
 	listener, err := net.Listen("tcp", listenAddr)
+	listener2, err := net.Listen("tcp", listenAddr2)
 	if err != nil {
 		log.Printf("Failed to listen: %v", err)
 	}
 	defer func() {
-		listener3.Close()
-		listener2.Close()
-		listener1.Close()
 		listener.Close()
+		listener2.Close()
 	}()
 
-	log.Printf("Listening on %s", listenAddr3)
-	log.Printf("Listening on %s", listenAddr2)
-	log.Printf("Listening on %s", listenAddr1)
 	log.Printf("Listening on %s", listenAddr)
+	log.Printf("Listening on %s", listenAddr2)
 
 	for {
 		var innerError error
-		clientConn1, innerError := listener1.Accept()
-		if innerError != nil {
-			log.Printf("Failed to accept client connection: %v", innerError)
-			os.Exit(1)
-		}
-
-		clientConn2, innerError := listener1.Accept()
-		if innerError != nil {
-			log.Printf("Failed to accept client connection: %v", innerError)
-			os.Exit(1)
-		}
-
-		clientConn3, innerError := listener1.Accept()
-		if innerError != nil {
-			log.Printf("Failed to accept client connection: %v", innerError)
-			os.Exit(1)
-		}
-
 		clientConn, innerError := listener.Accept()
 		if innerError != nil {
 			log.Printf("Failed to accept client connection: %v", innerError)
 			os.Exit(1)
 		}
 
+		clientConn2, innerError := listener2.Accept()
+		if innerError != nil {
+			log.Printf("Failed to accept client connection: %v", innerError)
+			os.Exit(1)
+		}
+
 		go func() {
-			if _, err = clientConn.Write([]byte("Health Check Succeed\n")); err != nil {
+			if _, err = clientConn2.Write([]byte("Health Check Succeed\n")); err != nil {
 				log.Printf("Failed to write to client: %v", err)
 			}
 
-			defer clientConn.Close()
+			defer clientConn2.Close()
 		}()
 
-		go handleClient(clientConn1)
-		go handleClient(clientConn2)
-		go handleClient(clientConn3)
+		//go handleClient(clientConn, connStr, connStr2)
+		go handleClient(clientConn)
 
 	}
 
@@ -100,8 +79,6 @@ func main() {
 
 // func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
 func handleClient(clientConn net.Conn) {
-
-	port := strings.Split(clientConn.LocalAddr().String(), ":")[1]
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 1024)
 	// Read the incoming connection into the buffer.
@@ -116,7 +93,7 @@ func handleClient(clientConn net.Conn) {
 	var client = sidecar.NewClient(context.Background())
 
 	var response *http.Response
-	if response, err = client.SendAPIRequest(port); err != nil || response.StatusCode != 200 {
+	if response, err = client.SendAPIRequest(); err != nil || response.StatusCode != 200 {
 		log.Printf("Failed to get backends endpoints")
 	}
 
@@ -141,8 +118,7 @@ func handleClient(clientConn net.Conn) {
 
 		switch responseBody.Status {
 		case sidecar.PAUSED:
-			log.Printf("Instance is paused, waking up instance " + responseBody.InstanceID)
-
+			log.Printf("Instance is paused, waking up instance")
 			if _, err = clientConn.Write([]byte("Instance is paused, waking up instance\n")); err != nil {
 				log.Printf("Failed to write to client: %v", err)
 			}
