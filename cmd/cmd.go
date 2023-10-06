@@ -57,13 +57,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		clientConn2, innerError := listener2.Accept()
+		clientConn2, innerError := listener1.Accept()
 		if innerError != nil {
 			log.Printf("Failed to accept client connection: %v", innerError)
 			os.Exit(1)
 		}
 
-		clientConn3, innerError := listener3.Accept()
+		clientConn3, innerError := listener1.Accept()
 		if innerError != nil {
 			log.Printf("Failed to accept client connection: %v", innerError)
 			os.Exit(1)
