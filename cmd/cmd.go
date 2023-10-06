@@ -98,7 +98,7 @@ func handleClient(clientConn net.Conn) {
 	var client = sidecar.NewClient(context.Background())
 
 	var response *http.Response
-	if response, err = client.SendAPIRequest(); err != nil || response.StatusCode != 200 {
+	if response, err = client.SendAPIRequest(port); err != nil || response.StatusCode != 200 {
 		log.Printf("Failed to get backends endpoints")
 	}
 
@@ -124,6 +124,7 @@ func handleClient(clientConn net.Conn) {
 		switch responseBody.Status {
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
+			client.StartInstance(responseBody.InstanceID)
 			if _, err = clientConn.Write([]byte("Instance is paused, waking up instance\n")); err != nil {
 				log.Printf("Failed to write to client: %v", err)
 			}
