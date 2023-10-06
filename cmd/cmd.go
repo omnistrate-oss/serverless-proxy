@@ -23,49 +23,45 @@ import (
 )**/
 
 func main() {
+	listenAddr4 := "0.0.0.0:30009" // #nosec G102
+	listenAddr3 := "0.0.0.0:30005" // #nosec G102
 	listenAddr := "0.0.0.0:30001"  // #nosec G102
 	listenAddr2 := "0.0.0.0:30000" // #nosec G102
 
-	//connStr2 := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/omnistratemetadatadb", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
-
 	listener, err := net.Listen("tcp", listenAddr)
 	listener2, err := net.Listen("tcp", listenAddr2)
+	listener3, err := net.Listen("tcp", listenAddr3)
+	listener4, err := net.Listen("tcp", listenAddr4)
+
 	if err != nil {
 		log.Printf("Failed to listen: %v", err)
 	}
 	defer func() {
 		listener.Close()
 		listener2.Close()
+		listener3.Close()
+		listener4.Close()
 	}()
 
 	log.Printf("Listening on %s", listenAddr)
 	log.Printf("Listening on %s", listenAddr2)
+	log.Printf("Listening on %s", listenAddr3)
+	log.Printf("Listening on %s", listenAddr4)
 
-	for {
-		var innerError error
-		clientConn, innerError := listener.Accept()
-		if innerError != nil {
-			log.Printf("Failed to accept client connection: %v", innerError)
-			os.Exit(1)
-		}
+	listeners := []net.Listener{listener, listener2, listener3, listener4}
 
-		clientConn2, innerError := listener2.Accept()
-		if innerError != nil {
-			log.Printf("Failed to accept client connection: %v", innerError)
-			os.Exit(1)
-		}
+	for _, lis := range listeners {
+		go func(l net.Listener) {
+			for {
+				clientConn, innerError := l.Accept()
+				if innerError != nil {
+					log.Printf("Failed to accept client connection: %v", err)
+					os.Exit(1)
+				}
 
-		go func() {
-			if _, err = clientConn2.Write([]byte("Health Check Succeed\n")); err != nil {
-				log.Printf("Failed to write to client: %v", err)
+				go handleClient(clientConn)
 			}
-
-			defer clientConn2.Close()
-		}()
-
-		//go handleClient(clientConn, connStr, connStr2)
-		go handleClient(clientConn)
-
+		}(lis)
 	}
 
 	chExit := make(chan os.Signal, 1)
@@ -75,10 +71,19 @@ func main() {
 		log.Println("Example EXITING...Bye.")
 		os.Exit(1)
 	}
+
 }
 
-// func handleClient(clientConn net.Conn, connStr string, connStr2 string) {
 func handleClient(clientConn net.Conn) {
+	port := strings.Split(clientConn.LocalAddr().String(), ":")[1]
+
+	if port == "30000" {
+		if _, err := clientConn.Write([]byte("Health Check Succeed\n")); err != nil {
+			log.Printf("Failed to write to client: %v", err)
+		}
+		return
+	}
+
 	// Make a buffer to hold incoming data.
 	buf := make([]byte, 1024)
 	// Read the incoming connection into the buffer.
