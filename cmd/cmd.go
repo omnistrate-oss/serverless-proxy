@@ -105,7 +105,7 @@ func handleClient(clientConn net.Conn) {
 	var connStr string // Connection string to the database
 	if response == nil || response.StatusCode != 200 {
 		fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
-			"nohost.com", os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+			"nohost.com", "username", "password")
 	} else {
 
 		var body []byte
@@ -156,7 +156,7 @@ func handleClient(clientConn net.Conn) {
 		}
 
 		connStr = fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
-			hostName, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"))
+			hostName, "username", "password")
 	}
 
 	defer func() {
