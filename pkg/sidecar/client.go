@@ -36,3 +36,13 @@ func (c *Client) StartInstance(instanceId string) (*http.Response, error) {
 
 	return resp, err
 }
+
+func (c *Client) StopInstance(instanceId string) (*http.Response, error) {
+	resp, err := http.Post("http://127.0.0.1:49750/instanceStatus/stop/"+instanceId, "application/json", nil)
+	if err != nil {
+		log.Printf("Failed stop instance:"+instanceId+" %v", err)
+	}
+	log.Printf("Response: %v", resp)
+
+	return resp, err
+}

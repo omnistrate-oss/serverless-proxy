@@ -121,6 +121,16 @@ func handleClient(clientConn net.Conn) {
 
 		log.Print(responseBody)
 
+		if strings.Contains(string(buf[:reqLen]), "stop") {
+			log.Printf("Stopping instance")
+			client := sidecar.NewClient(context.Background())
+			client.StopInstance(responseBody.InstanceID)
+			if _, err = clientConn.Write([]byte("Instance is stopping\n")); err != nil {
+				log.Printf("Failed to write to client: %v", err)
+			}
+			return
+		}
+
 		switch responseBody.Status {
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
