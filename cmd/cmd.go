@@ -137,8 +137,9 @@ func handleClient(clientConn *net.TCPConn) {
 
 			time.Sleep(15 * time.Second)
 			retryCount++
+		} else {
+			break
 		}
-		break
 	}
 
 	if err != nil {
