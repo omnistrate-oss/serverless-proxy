@@ -157,6 +157,8 @@ func handleClient(clientConn *net.TCPConn) {
 				log.Printf("Failed to close response body: %v", closeErr)
 			}
 		}
+
+		// close connections later
 	}()
 }
 
