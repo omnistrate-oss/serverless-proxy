@@ -111,7 +111,6 @@ func handleClient(clientConn *net.TCPConn) {
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
 			client.StartInstance(responseBody.InstanceID)
-			return
 		case sidecar.STARTING:
 			log.Printf("Instance is starting, waiting for instance to be available")
 			if _, err = clientConn.Write([]byte("Instance is starting, waiting for instance to be available\n")); err != nil {
