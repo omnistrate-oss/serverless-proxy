@@ -108,6 +108,22 @@ func handleClient(clientConn *net.TCPConn) {
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
 			client.StartInstance(responseBody.InstanceID)
+			retryCount := 0
+			for retryCount < 22 {
+				if response, err = client.SendAPIRequest(port); err != nil || response.StatusCode != 200 {
+					log.Printf("Failed to get backends endpoints %d times", retryCount)
+					return
+				}
+
+				if err = json.Unmarshal(body, &responseBody); err != nil {
+					log.Printf("Failed to unmarshal response body")
+				}
+				if responseBody.Status == sidecar.ACTIVE {
+					break
+				}
+				time.Sleep(15 * time.Second)
+				retryCount++
+			}
 		case sidecar.STARTING:
 			log.Printf("Instance is starting, waiting for instance to be available")
 			if _, err = clientConn.Write([]byte("Instance is starting, waiting for instance to be available\n")); err != nil {
@@ -116,34 +132,25 @@ func handleClient(clientConn *net.TCPConn) {
 			return
 		}
 
-		for _, sc := range responseBody.ServiceComponents {
-			if strings.Contains(sc.Alias, "postgres") {
-				hostName = sc.NodesEndpoints[0].Endpoint
-				break
+		if responseBody.Status == sidecar.ACTIVE {
+			for _, sc := range responseBody.ServiceComponents {
+				if strings.Contains(sc.Alias, "postgres") {
+					hostName = sc.NodesEndpoints[0].Endpoint
+					break
+				}
 			}
+		} else {
+			log.Printf("Instance is not active, exiting")
+			return
 		}
 	}
 
 	hostName = hostName + ":5432"
 
-	var rconn *net.TCPConn
-
-	retryCount := 0
-	for retryCount < 22 {
-		// connect to remote server
-		rconn, err = net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
-		if err != nil {
-			log.Printf("Remote connection failed: %s", err)
-
-			time.Sleep(15 * time.Second)
-			retryCount++
-		} else {
-			break
-		}
-	}
-
+	// connect to remote server
+	rconn, err := net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
 	if err != nil {
-		log.Printf("Fail to connect remote within timeout: %s", err)
+		log.Printf("Remote connection failed: %s", err)
 		return
 	}
 
