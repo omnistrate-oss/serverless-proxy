@@ -35,7 +35,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 COPY --from=builder /go/bin/proxyd /proxy/proxyd
 
 # Expose port 3001 to the outside
-EXPOSE 3001
+EXPOSE 30001 30000 30002
 
 # Command to run the executable
 ENTRYPOINT ["/proxy/proxyd"]
