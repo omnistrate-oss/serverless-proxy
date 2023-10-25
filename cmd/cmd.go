@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	"github.com/omnistrate/pg-proxy/pkg/sidecar"
@@ -89,10 +88,8 @@ func handleClient(clientConn *net.TCPConn) {
 	}
 
 	var hostName string
-	//var connStr string // Connection string to the database
-	if response == nil || response.StatusCode != 200 {
-		fmt.Sprintf("host=%s port=5432 user=%s dbname=postgres sslmode=disable password=%s",
-			"nohost.com", "username", "password")
+	if err != nil || response == nil || response.StatusCode != 200 {
+		hostName = "localhost"
 	} else {
 
 		var body []byte
@@ -141,6 +138,7 @@ func handleClient(clientConn *net.TCPConn) {
 			time.Sleep(15 * time.Second)
 			retryCount++
 		}
+		break
 	}
 
 	if err != nil {
@@ -159,9 +157,6 @@ func handleClient(clientConn *net.TCPConn) {
 				log.Printf("Failed to close response body: %v", closeErr)
 			}
 		}
-
-		clientConn.Close()
-		rconn.Close()
 	}()
 }
 
