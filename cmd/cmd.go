@@ -117,6 +117,7 @@ func handleClient(clientConn *net.TCPConn) {
 
 				if err = json.Unmarshal(body, &responseBody); err != nil {
 					log.Printf("Failed to unmarshal response body")
+					return
 				}
 				if responseBody.Status == sidecar.ACTIVE {
 					break
