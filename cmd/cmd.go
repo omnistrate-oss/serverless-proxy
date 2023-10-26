@@ -115,10 +115,19 @@ func handleClient(clientConn *net.TCPConn) {
 					return
 				}
 
+				var body []byte
+				if body, err = io.ReadAll(response.Body); err != nil {
+					log.Printf("Failed to read response body")
+					return
+				}
+
 				if err = json.Unmarshal(body, &responseBody); err != nil {
 					log.Printf("Failed to unmarshal response body")
 					return
 				}
+
+				log.Printf("Instance status: %s", responseBody.Status)
+
 				if responseBody.Status == sidecar.ACTIVE {
 					break
 				}
