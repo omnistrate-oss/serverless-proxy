@@ -64,5 +64,5 @@ psql -U postgres -W -h <endpoint> postgres -p <port>
 1. This is a pretty simple example to show how proxy can integrate with Omnistrate platform, please limit the number of backend instances for one proxy instance less than 9.
 2. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
 
-```
+
 
