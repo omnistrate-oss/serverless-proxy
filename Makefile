@@ -37,8 +37,7 @@ update-dependencies:
 .PHONY: run
 run:
 	echo "Running service" && \
-    export POSTGRES_USER=postgres && \
-    export POSTGRES_PASSWORD=XXXX && \
+    export DRY_RUN=true && \
     export LOG_LEVEL=debug && \
     export LOG_FORMAT=pretty && \
 	go run ${BUILD_FLAGS} cmd/cmd.go

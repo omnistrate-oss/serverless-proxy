@@ -34,8 +34,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /go/bin/proxyd /proxy/proxyd
 
-# Expose port 3001 to the outside
-EXPOSE 30001 30000 30002
+# Expose port 
+EXPOSE 30000 30001 30002 30003 30004 30005 30006 30007 30008 30009
 
 # Command to run the executable
 ENTRYPOINT ["/proxy/proxyd"]
