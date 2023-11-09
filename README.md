@@ -1,6 +1,6 @@
 # Omnistrate Postgres Proxy Example
 This is a simple example to show how to leverage postgres proxy with Omnistrate platform to build serverless product.
-Code is not intended for production use case.
+This code is not intended for production use case.
 
 ## Build Example Proxy Docker Image
 
@@ -13,7 +13,7 @@ make docker-build
 
 **Step 1: Import Service Definition From Docker Compose**
 
-sample docker compose file exist in /dockercompose folder
+Sample docker compose file exist in /dockercompose folder
 
 
 **Step 2: Spinup Supabase Proxy Instance**
