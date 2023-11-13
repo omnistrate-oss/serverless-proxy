@@ -19,7 +19,7 @@ The docker compose example uses two images:
 - njnjyyh/supabase-demo:latest <- supabase standard image built from **https://github.com/supabase/postgres/tree/develop/docker/all-in-one**
 - docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built fromt this repo
 
-Setup Service Name to **Supabase Serverless**
+Setup Service Name to **Supabase Serverless** (using this name is important as the following commands will refernce the service with this name)
 
 
 **Step 2: Spinup Supabase Proxy Instance**
