@@ -19,6 +19,8 @@ The docker compose example uses two images:
 - njnjyyh/supabase-demo:latest <- supabase standard image built from **https://github.com/supabase/postgres/tree/develop/docker/all-in-one**
 - docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built fromt this repo
 
+Setup Service Name to **Supabase Serverless**
+
 
 **Step 2: Spinup Supabase Proxy Instance**
 
@@ -41,8 +43,28 @@ echo -n "yourPassword" | openssl dgst -sha256
 ```
 Calling **signin API** returns a **jwtToken** value that needs to be used as bearer token in all subsequent calls. 
 
+***Step 2a: List Services***
 ```
-curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/<serviceKey>/<serviceAPIVersion>/<serviceEnvironmentKey>/<serviceModelKey>/<productTierKey>/proxy' \
+curl -X 'GET' \
+  'https://api.omnistrate.cloud/2022-09-01-00/service' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer xxxxxx'
+```
+Calling **list services API** returns **serviceId** that needs to be used in subsequent calls.
+
+***Step 2b: Describe Service***
+```
+curl -X 'GET' \
+  'https://api.omnistrate.cloud/2022-09-01-00/service/<serviceId>' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer xxxxxx'
+```
+
+Calling **describe service API** returns **serviceProviderId** that needs to be used in subsequent calls. 
+
+***Step 2c: Provision Proxy Instance***
+```
+curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/supabase-serverless/v1/dev/supabase-serverless-omnistrate-hosted/supabase-serverless-omnistrate-hosted-model-omnistrate-dedicated-tenancy/proxy' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer xxxxxx' \
   -H 'Content-Type: application/json' \
@@ -55,6 +77,8 @@ curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/
 }'
 
 ```
+
+Note: ***Supbase Serverless*** is the service name that being used in this example, other service names will subject to different url formats.
 
 **Step 3: Setup Supabase Instance**
 
