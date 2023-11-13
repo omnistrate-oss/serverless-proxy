@@ -52,7 +52,14 @@ curl -X 'GET' \
 ```
 Calling **list services API** returns **serviceId** that needs to be used in subsequent calls.
 
+Another way to get the **serviceId** is by navigating on the UI and get the id from the Url of the Service page. 
+
+![image](https://github.com/omnistrate/pg-proxy/assets/1789738/99c318bb-fc1c-41d8-868b-e1b7d13d1db6)
+
 ***Step 2b: Describe Service***
+
+Once you have the service Id you can call the following API to get the **serviceProviderId**  value
+
 ```
 curl -X 'GET' \
   'https://api.omnistrate.cloud/2022-09-01-00/service/<serviceId>' \
@@ -70,9 +77,9 @@ curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/
   -H 'Content-Type: application/json' \
   -d '{
   "cloud_provider": "aws",
-  "region": "us-east-1",
+  "region": "us-east-2",
   "requestParams": {
-    "custom_availability_zone": "us-east-1a"
+    "custom_availability_zone": "us-east-2a"
   }
 }'
 
