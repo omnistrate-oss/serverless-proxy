@@ -13,7 +13,11 @@ make docker-build
 
 **Step 1: Import Service Definition From Docker Compose**
 
-Sample docker compose file exist in /dockercompose folder
+Sample docker compose file exist in /dockercompose/supabase_demo.yaml folder
+
+The docker compose example uses two images: 
+- njnjyyh/supabase-demo:latest <- supabase standard image built from **https://github.com/supabase/postgres/tree/develop/docker/all-in-one**
+- docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built fromt this repo
 
 
 **Step 2: Spinup Supabase Proxy Instance**
