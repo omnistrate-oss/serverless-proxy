@@ -36,8 +36,9 @@ curl -X 'POST' \
 }'
 ```
 The hashedPasword can be generated using the command line
+```
 echo -n "yourPassword" | openssl dgst -sha256
-
+```
 calling **signin** api returns a token value that needs to be used as Bearer Token in all subsequent calls. 
 
 ```
