@@ -116,6 +116,7 @@ psql -U postgres -W -h <endpoint> postgres -p <port>
 The default password for the demo is **postgres**
 
 Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
+While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. 
 
 **Notes**
 
