@@ -116,12 +116,7 @@ psql -U postgres -W -h <endpoint> postgres -p <port>
 The default password for the demo is **postgres**
 
 Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
-While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. 
-
-**Notes**
-
-1. This is a pretty simple example to show how proxy can integrate with Omnistrate platform, please limit the number of backend instances for one proxy instance less than 9.
-2. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
+While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
 
 
 
