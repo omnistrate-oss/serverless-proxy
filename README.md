@@ -96,11 +96,19 @@ In Omnistrate console access page, provision supabase instance in us-east-2 once
 
 **Step 4: Access Supabase Instance**
 
-Once supabase instance is up and running, check the connectivity from access page and get the endpoint/port for connection
+Once supabase instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
+
+![image](https://github.com/omnistrate/pg-proxy/assets/1789738/e6528000-9dde-4f98-a971-2eb4c5d1a28f)
+
+Note that if the instance is not used for some time it will be Stopped automatically. 
 
 ```
 psql -U postgres -W -h <endpoint> postgres -p <port>
 ```
+
+The default password for the demo is **postgres**
+
+Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
 
 **Notes**
 
