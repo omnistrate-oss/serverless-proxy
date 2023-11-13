@@ -22,7 +22,7 @@ The docker compose example uses two images:
 
 **Step 2: Spinup Supabase Proxy Instance**
 
-You need to get bearer token first via signup API
+You need to get bearer token first via **signup API**
 
 API docs can be found here: https://api.omnistrate.cloud/docs/external/
 ```
@@ -39,7 +39,7 @@ The hashedPasword can be generated using the command line
 ```
 echo -n "yourPassword" | openssl dgst -sha256
 ```
-Calling **signin** api returns a jwtToken value that needs to be used as bearer token in all subsequent calls. 
+Calling **signin API** returns a **jwtToken** value that needs to be used as bearer token in all subsequent calls. 
 
 ```
 curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/<serviceKey>/<serviceAPIVersion>/<serviceEnvironmentKey>/<serviceModelKey>/<productTierKey>/proxy' \
