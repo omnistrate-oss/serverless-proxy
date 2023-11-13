@@ -89,7 +89,10 @@ Note: ***Supbase Serverless*** is the service name that being used in this examp
 
 **Step 3: Setup Supabase Instance**
 
-In Omnistrate console access page, provision supabase instance once proxy instance is up and running (you can find proxy instance status via operate page)
+In Omnistrate console access page, provision supabase instance in us-east-2 once proxy instance is up and running (you can find proxy instance status via operate page)
+
+![image](https://github.com/omnistrate/pg-proxy/assets/1789738/03dafa77-2cd2-4abb-9159-b8a6bd5843de)
+
 
 **Step 4: Access Supabase Instance**
 
@@ -99,7 +102,7 @@ Once supabase instance is up and running, check the connectivity from access pag
 psql -U postgres -W -h <endpoint> postgres -p <port>
 ```
 
-**Note**
+**Notes**
 
 1. This is a pretty simple example to show how proxy can integrate with Omnistrate platform, please limit the number of backend instances for one proxy instance less than 9.
 2. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
