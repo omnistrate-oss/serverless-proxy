@@ -89,7 +89,13 @@ Note: ***Supbase Serverless*** is the service name that being used in this examp
 
 **Step 3: Setup Supabase Instance**
 
-In Omnistrate console access page, provision supabase instance in us-east-2 once proxy instance is up and running (you can find proxy instance status via operate page)
+In Omnistrate console access page, provision supabase instance in us-east-2 once proxy instance is up and running
+
+You can find proxy instance status via operate page
+
+![image](https://github.com/omnistrate/pg-proxy/assets/1789738/61cbc604-b11b-4e7d-bbd4-7e5b137a63c9)
+
+And the provision the new instance
 
 ![image](https://github.com/omnistrate/pg-proxy/assets/1789738/03dafa77-2cd2-4abb-9159-b8a6bd5843de)
 
@@ -97,6 +103,7 @@ In Omnistrate console access page, provision supabase instance in us-east-2 once
 **Step 4: Access Supabase Instance**
 
 Once supabase instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
+
 
 ![image](https://github.com/omnistrate/pg-proxy/assets/1789738/e6528000-9dde-4f98-a971-2eb4c5d1a28f)
 
