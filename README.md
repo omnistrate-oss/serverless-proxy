@@ -15,7 +15,7 @@ make docker-build
 
 Sample docker compose file exist in /dockercompose/supabase_demo.yaml folder
 
-You can import the docker image using the UI 
+You can import the docker image using the UI using the **Import docker compose** option
 
 ![image](https://github.com/omnistrate/pg-proxy/assets/1789738/08a6257c-5877-41cb-a827-7ab23dbe537b)
 
