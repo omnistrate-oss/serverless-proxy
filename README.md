@@ -59,7 +59,8 @@ Calling **list services API** returns **serviceId** that needs to be used in sub
 
 Another way to get the **serviceId** is by navigating on the UI and get the id from the Url of the Service page. 
 
-![image](https://github.com/omnistrate/pg-proxy/assets/1789738/99c318bb-fc1c-41d8-868b-e1b7d13d1db6)
+<img width="803" alt="Screenshot 2023-11-16 at 2 53 58 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/1cd3cd44-cf28-4fda-bac1-a924b04609bf">
+
 
 ***Step 2b: Describe Service***
 
@@ -95,22 +96,18 @@ Note: ***Postgres Serverless*** is the service name that being used in this exam
 **Step 3: Setup Postgres Instance**
 
 In Omnistrate console access page, provision postgres instance in us-east-2 once proxy instance is up and running
-
 You can find proxy instance status via operate page
-
-![image](https://github.com/omnistrate/pg-proxy/assets/1789738/61cbc604-b11b-4e7d-bbd4-7e5b137a63c9)
+<img width="956" alt="Screenshot 2023-11-16 at 3 06 54 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/2f01e08e-29a8-4f38-be4e-3bf8393226da">
 
 And the provision the new instance
 
-![image](https://github.com/omnistrate/pg-proxy/assets/1789738/03dafa77-2cd2-4abb-9159-b8a6bd5843de)
-
+<img width="399" alt="Screenshot 2023-11-16 at 2 54 52 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/4a986be0-6ba9-4091-bbfa-67c159b818e9">
 
 **Step 4: Access postgres Instance**
 
 Once postgres instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
 
-
-![image](https://github.com/omnistrate/pg-proxy/assets/1789738/e6528000-9dde-4f98-a971-2eb4c5d1a28f)
+<img width="1626" alt="Screenshot 2023-11-16 at 3 07 26 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/1b51d1d3-44c1-45fe-a1f2-be156fac904c">
 
 Note that if the instance is not used for some time it will be Stopped automatically. 
 
