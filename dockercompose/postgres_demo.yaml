@@ -1,7 +1,7 @@
 version: "3"
 services:
-  supabase:
-    image: njnjyyh/supabase-demo:latest
+  postgres:
+    image: njnjyyh/postgres-demo:latest
     ports:
       - 5432:5432
       - 8000:8000

@@ -9,11 +9,11 @@ make docker-build
 ```
 
 
-## Setup Simple Supabase Serverless With Omnistrate
+## Setup Simple Postgres Serverless With Omnistrate
 
 **Step 1: Import Service Definition From Docker Compose**
 
-Sample docker compose file exist in /dockercompose/supabase_demo.yaml folder
+Sample docker compose file exist in /dockercompose/postgres_demo.yaml folder
 
 You can import the docker image using the UI using the **Import docker compose** option
 
@@ -21,13 +21,13 @@ You can import the docker image using the UI using the **Import docker compose**
 
 
 The docker compose example uses two images: 
-- njnjyyh/supabase-demo:latest <- supabase standard image built from **https://github.com/supabase/postgres/tree/develop/docker/all-in-one**
+- njnjyyh/postgres-demo:latest 
 - docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built fromt this repo
 
-Setup Service Name to **Supabase Serverless**. Using this name is important as the following commands will refernce the service with this name. 
+Setup Service Name to **Postgres Serverless**. Using this name is important as the following commands will refernce the service with this name. 
 
 
-**Step 2: Spinup Supabase Proxy Instance**
+**Step 2: Spinup Postgres Proxy Instance**
 
 You need to get bearer token first via **signup API**
 
@@ -76,7 +76,7 @@ Calling **describe service API** returns **serviceProviderId** that needs to be 
 
 ***Step 2c: Provision Proxy Instance***
 ```
-curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/supabase-serverless/v1/dev/supabase-serverless-omnistrate-hosted/supabase-serverless-omnistrate-hosted-model-omnistrate-dedicated-tenancy/proxy' \
+curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/postgres-serverless/v1/dev/postgres-serverless-omnistrate-hosted/postgres-serverless-omnistrate-hosted-model-omnistrate-dedicated-tenancy/proxy' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer xxxxxx' \
   -H 'Content-Type: application/json' \
@@ -90,11 +90,11 @@ curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/
 
 ```
 
-Note: ***Supbase Serverless*** is the service name that being used in this example, other service names will subject to different url formats.
+Note: ***Postgres Serverless*** is the service name that being used in this example, other service names will subject to different url formats.
 
-**Step 3: Setup Supabase Instance**
+**Step 3: Setup Postgres Instance**
 
-In Omnistrate console access page, provision supabase instance in us-east-2 once proxy instance is up and running
+In Omnistrate console access page, provision postgres instance in us-east-2 once proxy instance is up and running
 
 You can find proxy instance status via operate page
 
@@ -105,9 +105,9 @@ And the provision the new instance
 ![image](https://github.com/omnistrate/pg-proxy/assets/1789738/03dafa77-2cd2-4abb-9159-b8a6bd5843de)
 
 
-**Step 4: Access Supabase Instance**
+**Step 4: Access postgres Instance**
 
-Once supabase instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
+Once postgres instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
 
 
 ![image](https://github.com/omnistrate/pg-proxy/assets/1789738/e6528000-9dde-4f98-a971-2eb4c5d1a28f)

@@ -156,7 +156,7 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 
 		if responseBody.Status == sidecar.ACTIVE {
 			for _, sc := range responseBody.ServiceComponents {
-				if strings.Contains(sc.Alias, "supabase") {
+				if strings.Contains(sc.Alias, "postgres") {
 					hostName = sc.NodesEndpoints[0].Endpoint
 					break
 				}
