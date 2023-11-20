@@ -120,5 +120,6 @@ The default password for the demo is **postgres**
 Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
 While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
 
+*Update* 
 
-
+Step 2 can be skipped now, you can directly go to Step 3 and omnistrate platform will auto provision proxy instance for you.
