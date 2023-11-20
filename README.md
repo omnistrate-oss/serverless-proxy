@@ -29,69 +29,7 @@ Setup Service Name to **Postgres Serverless**. Using this name is important as t
 
 **Step 2: Spinup Postgres Proxy Instance**
 
-You need to get bearer token first via **signup API**
-
-API docs can be found here: https://api.omnistrate.cloud/docs/external/
-```
-curl -X 'POST' \
-  'https://api.omnistrate.cloud/2022-09-01-00/signin' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "email": "youruser@company.com",
-  "hashedPassword": "hashedPassword"
-}'
-```
-The hashedPasword can be generated using the command line
-```
-echo -n "yourPassword" | openssl dgst -sha256
-```
-Calling **signin API** returns a **jwtToken** value that needs to be used as bearer token in all subsequent calls. 
-
-***Step 2a: List Services***
-```
-curl -X 'GET' \
-  'https://api.omnistrate.cloud/2022-09-01-00/service' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Bearer xxxxxx'
-```
-Calling **list services API** returns **serviceId** that needs to be used in subsequent calls.
-
-Another way to get the **serviceId** is by navigating on the UI and get the id from the Url of the Service page. 
-
-<img width="803" alt="Screenshot 2023-11-16 at 2 53 58 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/1cd3cd44-cf28-4fda-bac1-a924b04609bf">
-
-
-***Step 2b: Describe Service***
-
-Once you have the service Id you can call the following API to get the **serviceProviderId**  value
-
-```
-curl -X 'GET' \
-  'https://api.omnistrate.cloud/2022-09-01-00/service/<serviceId>' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Bearer xxxxxx'
-```
-
-Calling **describe service API** returns **serviceProviderId** that needs to be used in subsequent calls. 
-
-***Step 2c: Provision Proxy Instance***
-```
-curl -X 'POST' \  'https://api.omnistrate.cloud/2022-09-01-00/resource-instance/<serviceProviderId>/postgres-serverless/v1/dev/postgres-serverless-omnistrate-hosted/postgres-serverless-omnistrate-hosted-model-omnistrate-dedicated-tenancy/proxy' \
-  -H 'accept: application/json' \
-  -H 'Authorization: Bearer xxxxxx' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "cloud_provider": "aws",
-  "region": "us-east-2",
-  "requestParams": {
-    "custom_availability_zone": "us-east-2a"
-  }
-}'
-
-```
-
-Note: ***Postgres Serverless*** is the service name that being used in this example, other service names will subject to different url formats.
+Previously Step 2 has to be done manually and it can be skipped now, you can directly go to Step 3 and Omnistrate platform will auto provision proxy instance for you.
 
 **Step 3: Setup Postgres Instance**
 
@@ -120,6 +58,3 @@ The default password for the demo is **postgres**
 Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
 While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
 
-## Update 
-
-Step 2 can be skipped now, you can directly go to Step 3 and omnistrate platform will auto provision proxy instance for you.
