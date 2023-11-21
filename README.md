@@ -21,8 +21,8 @@ You can import the docker image using the UI using the **Import docker compose**
 
 
 The docker compose example uses two images: 
-- njnjyyh/postgres-demo:latest 
-- docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built fromt this repo
+- docker.io/njnjyyh/pg-proxy-demo:1
+- docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built from this repo
 
 Setup Service Name to **Postgres Serverless**. Using this name is important as the following commands will refernce the service with this name. 
 
