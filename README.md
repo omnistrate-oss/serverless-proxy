@@ -24,14 +24,9 @@ The docker compose example uses two images:
 - docker.io/njnjyyh/pg-proxy-demo:1 <- postgres image with prometheus metrics exporter (https://github.com/prometheus-community/postgres_exporter)
 - docker.io/njnjyyh/pg-proxy-demo:latest <- proxy image built from this repo
 
-Setup Service Name to **Postgres Serverless**. Using this name is important as the following commands will refernce the service with this name. 
+Setup Service Name to **Postgres Serverless**. Using this name is important as the following commands will reference the service with this name. 
 
-
-**Step 2: Spinup Postgres Proxy Instance**
-
-Previously Step 2 has to be done manually and it can be skipped now, you can directly go to Step 3 and Omnistrate platform will auto provision proxy instance for you.
-
-**Step 3: Setup Postgres Instance**
+**Step 2: Setup Postgres Instance**
 
 In Omnistrate console access page, provision postgres instance in us-east-2 once proxy instance is up and running
 You can find proxy instance status via operate page
@@ -41,7 +36,7 @@ And the provision the new instance
 
 <img width="399" alt="Screenshot 2023-11-16 at 2 54 52 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/4a986be0-6ba9-4091-bbfa-67c159b818e9">
 
-**Step 4: Access postgres Instance**
+**Step 3: Access postgres Instance**
 
 Once postgres instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
 
@@ -57,4 +52,3 @@ The default password for the demo is **postgres**
 
 Once we attempt to start the connection the instance will be automatically started, it will take a few minutes for the server to start and then you can operate on the open connection. 
 While the connection is open the instance will be Running and after the connection is close the instance will be Stopped automatically. Auto stop in this example relies on prometheus metrics pg_stat_database_num_backends. If you want to use other metrics, please update docker compose.
-
