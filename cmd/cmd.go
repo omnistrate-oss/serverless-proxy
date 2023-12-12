@@ -141,7 +141,7 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 
 		switch responseBody.Status {
 		// Step 2a: if backend instance is paused, starting the backend instance and holding frontend connections until backend instance is active.
-		// In this example, we are using 22 retries with 15 seconds interval to check backend instance status.
+		// In this example, we are retrying for 300s
 		case sidecar.PAUSED:
 			log.Printf("Instance is paused, waking up instance")
 			sidecarClient.StartInstance(responseBody.InstanceID)
