@@ -146,7 +146,7 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 			log.Printf("Instance is paused, waking up instance")
 			sidecarClient.StartInstance(responseBody.InstanceID)
 			retryCount := 0
-			for retryCount < 22 {
+			for retryCount < 300 {
 				if response, err = sidecarClient.QueryBackendInstanceStatus(port); err != nil || response.StatusCode != 200 {
 					log.Printf("Failed to get backends endpoints %d times", retryCount)
 					return
@@ -168,7 +168,7 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 				if responseBody.Status == sidecar.ACTIVE {
 					break
 				}
-				time.Sleep(15 * time.Second)
+				time.Sleep(1 * time.Second)
 				retryCount++
 			}
 		case sidecar.STARTING:
