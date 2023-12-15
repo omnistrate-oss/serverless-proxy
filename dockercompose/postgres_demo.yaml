@@ -1,4 +1,7 @@
 version: "3"
+x-omnistrate-my-account:
+  AwsAccountId: '<accountId>'
+  AwsBootstrapRoleAccountArn: 'arn:aws:iam::<accountId>:role/omnistrate-bootstrap-role'
 services:
   postgres:
     image: njnjyyh/pg-proxy-demo:1
