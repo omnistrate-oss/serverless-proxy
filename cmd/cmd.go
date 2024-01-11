@@ -17,12 +17,12 @@ import (
 )
 
 /**
- * This is a simple postgres proxy example to show how proxy works with Omnistrate platform. Note!!! This is not a production ready proxy.
+ * This is a simple generic tcp proxy example to show how proxy works with Omnistrate platform. Note!!! This is not a production ready proxy.
  * In high level, the proxy does following steps:
  * 1. Start frontend(end client to proxy) TCP listeners.
  * 2. Discover backend instance's endpoint via mapped proxy port.
  *   2.a If backend instance is paused, starting the backend instance and holding frontend connections until backend instance is active.
- * 3. Start backend(proxy to postgres instance) TCP channel.
+ * 3. Start backend(proxy to serverless resource instance) TCP channel.
  * 4. Forward data from frontend to backend and forward response data from backend to frontend.
  */
 func main() {
@@ -71,7 +71,7 @@ func main() {
 	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	select {
 	case <-chExit:
-		log.Println("Example EXITING...Bye.")
+		log.Println("EXITING...Bye.")
 		os.Exit(1)
 	}
 
@@ -101,21 +101,11 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 		return
 	}
 
-	// Check if the input is a psql connection
-	// First 8 bytes will be
-	// 00 00 00 08 04 d2 16 2f
-	if inputBuffer[3] != 0x08 &&
-		inputBuffer[4] != 0x04 &&
-		inputBuffer[5] != 0xd2 &&
-		inputBuffer[6] != 0x16 &&
-		inputBuffer[7] != 0x2f {
-		log.Printf("Not a psql connection")
-		return
-	}
-
+	var serverlessTargetPort string
 	var hostName string
 	if os.Getenv("DRY_RUN") == "true" {
 		hostName = "localhost"
+		serverlessTargetPort = "5432"
 	} else {
 		// Step 2: Discover backend instance's endpoint via mapped proxy port.
 		var err error
@@ -179,15 +169,32 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 			return
 		}
 
+		serverlessTargetPort = os.Getenv("TARGET_PORT")
+		if serverlessTargetPort == "" {
+			log.Printf("Failed to get serverless target port")
+			return
+		}
+
+		serverlessResourceKey := os.Getenv("SERVERLESS_RESOURCE_KEY")
+		if serverlessResourceKey == "" {
+			log.Printf("Failed to get serverless resource key")
+			return
+		}
+
 		if responseBody.Status == sidecar.ACTIVE {
 			for _, sc := range responseBody.ServiceComponents {
-				if strings.Contains(sc.Alias, "postgres") {
-					hostName = sc.NodesEndpoints[0].Endpoint
+				if strings.Contains(sc.Alias, serverlessResourceKey) {
+					if len(sc.NodesEndpoints) == 0 {
+						log.Printf("No serverless resource endpoint found")
+						return
+					}
+
+					hostName = serverlessResourceKey + "." + responseBody.InstanceID
 					break
 				}
 			}
 			if hostName == "" {
-				log.Printf("Failed to get postgres endpoint")
+				log.Printf("Failed to get serverless endpoint")
 				return
 			}
 		} else {
@@ -204,9 +211,8 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 		}()
 	}
 
-	// Backend port is depends on actual postgres port, in this example, we are using 5432
-	hostName = hostName + ":5432"
-	// Step 3: connect to backend postgres server
+	hostName = hostName + ":" + serverlessTargetPort
+	// Step 3: connect to backend serverless resource server
 	backendConnection, err := net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
 	if err != nil {
 		log.Printf("Remote connection failed: %s", err)
@@ -237,7 +243,7 @@ func handleIncomingConnection(srcChannel, dstChannel *net.TCPConn, firstPacket [
 			}
 
 			// Note that you can add any custom logic, like authentication, authorization
-			// before sending data to the backend postgres server.
+			// before sending data to the backend serverless resource server.
 			b, err = getModifiedBuffer(buff[:n])
 			if err != nil {
 				log.Printf("%s\n", err)
