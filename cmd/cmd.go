@@ -88,24 +88,11 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 		return
 	}
 
-	inputBuffer := make([]byte, 0xffff)
-	size, err := frontEndConnection.Read(inputBuffer)
-	if err != nil {
-		log.Printf("Failed to read from client: %v", err)
-		return
-	}
-
-	inputBuffer, err = getModifiedBuffer(inputBuffer[:size])
-	if err != nil {
-		log.Printf("%s\n", err)
-		return
-	}
-
 	var serverlessTargetPort string
 	var hostName string
 	if os.Getenv("DRY_RUN") == "true" {
-		hostName = "localhost"
-		serverlessTargetPort = "5432"
+		hostName = "127.0.0.1"
+		serverlessTargetPort = "3306"
 	} else {
 		// Step 2: Discover backend instance's endpoint via mapped proxy port.
 		var err error
@@ -220,7 +207,7 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 	}
 
 	// Step 4: Forward data from frontend to backend and forward response data from backend to frontend.
-	go handleIncomingConnection(frontEndConnection, backendConnection, inputBuffer)
+	go handleIncomingConnection(frontEndConnection, backendConnection)
 	go handleResponseConnection(backendConnection, frontEndConnection)
 
 	// TODO: Close frontend/backend connections
@@ -229,36 +216,30 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 /**
  * This function is used to forward data from frontend to backend. srcChannel is frontend connection, dstChannel is backend connection.
  */
-func handleIncomingConnection(srcChannel, dstChannel *net.TCPConn, firstPacket []byte) {
+func handleIncomingConnection(srcChannel, dstChannel *net.TCPConn) {
 	buff := make([]byte, 0xffff)
-	firstTime := true
 
 	for {
 		var b []byte
-		if !firstTime {
-			n, err := srcChannel.Read(buff)
-			if err != nil {
-				log.Printf("Read failed '%s'\n", err)
-				return
-			}
-
-			// Note that you can add any custom logic, like authentication, authorization
-			// before sending data to the backend serverless resource server.
-			b, err = getModifiedBuffer(buff[:n])
-			if err != nil {
-				log.Printf("%s\n", err)
-				err = dstChannel.Close()
-				if err != nil {
-					log.Printf("connection closed failed '%s'\n", err)
-				}
-				return
-			}
-		} else {
-			b = firstPacket
-			firstTime = false
+		n, err := srcChannel.Read(buff)
+		if err != nil {
+			log.Printf("Read failed '%s'\n", err)
+			return
 		}
 
-		_, err := dstChannel.Write(b)
+		// Note that you can add any custom logic, like authentication, authorization
+		// before sending data to the backend serverless resource server.
+		b, err = getModifiedBuffer(buff[:n])
+		if err != nil {
+			log.Printf("%s\n", err)
+			err = dstChannel.Close()
+			if err != nil {
+				log.Printf("connection closed failed '%s'\n", err)
+			}
+			return
+		}
+
+		_, err = dstChannel.Write(b)
 		if err != nil {
 			log.Printf("Write failed '%s'\n", err)
 			return
