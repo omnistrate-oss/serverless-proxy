@@ -209,8 +209,6 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 	// Step 4: Forward data from frontend to backend and forward response data from backend to frontend.
 	go handleIncomingConnection(frontEndConnection, backendConnection)
 	go handleResponseConnection(backendConnection, frontEndConnection)
-
-	// TODO: Close frontend/backend connections
 }
 
 /**
@@ -223,6 +221,12 @@ func handleIncomingConnection(srcChannel, dstChannel *net.TCPConn) {
 		var b []byte
 		n, err := srcChannel.Read(buff)
 		if err != nil {
+			if err == io.EOF {
+				err = dstChannel.Close()
+				if err != nil {
+					log.Printf("backend connection closed failed '%s'\n", err)
+				}
+			}
 			log.Printf("Read failed '%s'\n", err)
 			return
 		}
