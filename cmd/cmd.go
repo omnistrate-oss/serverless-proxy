@@ -90,119 +90,109 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 
 	var serverlessTargetPort string
 	var hostName string
+	var backendConnection *net.TCPConn
 	if os.Getenv("DRY_RUN") == "true" {
+		var err error
 		hostName = "127.0.0.1"
 		serverlessTargetPort = "3306"
+		hostName = hostName + ":" + serverlessTargetPort
+		backendConnection, err = net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
+		if err != nil {
+			log.Printf("Remote connection failed: %s", err)
+			return
+		}
 	} else {
-		// Step 2: Discover backend instance's endpoint via mapped proxy port.
-		var err error
-		var response *http.Response
-		if response, err = sidecarClient.QueryBackendInstanceStatus(port); err != nil || response.StatusCode != 200 {
-			log.Printf("Failed to get backends endpoints")
-			return
-		}
-
-		var body []byte
-		if body, err = io.ReadAll(response.Body); err != nil {
-			log.Printf("Failed to read response body")
-			return
-		}
-
-		responseBody := &sidecar.InstanceStatus{}
-
-		if err = json.Unmarshal(body, &responseBody); err != nil {
-			log.Printf("Failed to unmarshal response body")
-		}
-
-		log.Printf("Instance response: %s", responseBody)
-
-		switch responseBody.Status {
-		// Step 2a: if backend instance is paused, starting the backend instance and holding frontend connections until backend instance is active.
-		// In this example, we are using 22 retries with 15 seconds interval to check backend instance status.
-		case sidecar.PAUSED:
-			log.Printf("Instance is paused, waking up instance")
-			sidecarClient.StartInstance(responseBody.InstanceID)
-			retryCount := 0
-			for retryCount < 22 {
-				if response, err = sidecarClient.QueryBackendInstanceStatus(port); err != nil || response.StatusCode != 200 {
-					log.Printf("Failed to get backends endpoints %d times", retryCount)
-					return
-				}
-
-				var body []byte
-				if body, err = io.ReadAll(response.Body); err != nil {
-					log.Printf("Failed to read response body")
-					return
-				}
-
-				if err = json.Unmarshal(body, &responseBody); err != nil {
-					log.Printf("Failed to unmarshal response body")
-					return
-				}
-
-				log.Printf("Instance status: %s", responseBody.Status)
-
-				if responseBody.Status == sidecar.ACTIVE {
-					break
-				}
-				time.Sleep(15 * time.Second)
-				retryCount++
-			}
-		case sidecar.STARTING:
-			log.Printf("Instance is starting, waiting for instance to be available")
-			if _, err = frontEndConnection.Write([]byte("Instance is starting, waiting for instance to be available\n")); err != nil {
-				log.Printf("Failed to write to client: %v", err)
-			}
-			return
-		}
-
-		serverlessTargetPort = os.Getenv("TARGET_PORT")
-		if serverlessTargetPort == "" {
-			log.Printf("Failed to get serverless target port")
-			return
-		}
-
-		serverlessResourceKey := os.Getenv("SERVERLESS_RESOURCE_KEY")
-		if serverlessResourceKey == "" {
-			log.Printf("Failed to get serverless resource key")
-			return
-		}
-
-		if responseBody.Status == sidecar.ACTIVE {
-			for _, sc := range responseBody.ServiceComponents {
-				if strings.Contains(sc.Alias, serverlessResourceKey) {
-					if len(sc.NodesEndpoints) == 0 {
-						log.Printf("No serverless resource endpoint found")
-						return
-					}
-
-					hostName = serverlessResourceKey + "." + responseBody.InstanceID
-					break
-				}
-			}
-			if hostName == "" {
-				log.Printf("Failed to get serverless endpoint")
+		retryCount := 0
+		for retryCount < 22 {
+			// Step 2: Discover backend instance's endpoint via mapped proxy port.
+			var err error
+			var response *http.Response
+			if response, err = sidecarClient.QueryBackendInstanceStatus(port); err != nil || response.StatusCode != 200 {
+				log.Printf("Failed to get backends endpoints")
 				return
 			}
-		} else {
-			log.Printf("Instance is not active, exiting...")
-			return
-		}
 
-		defer func() {
-			if response != nil {
-				if closeErr := response.Body.Close(); closeErr != nil {
-					log.Printf("Failed to close response body: %v", closeErr)
-				}
+			var body []byte
+			if body, err = io.ReadAll(response.Body); err != nil {
+				log.Printf("Failed to read response body")
+				return
 			}
-		}()
+
+			responseBody := &sidecar.InstanceStatus{}
+
+			if err = json.Unmarshal(body, &responseBody); err != nil {
+				log.Printf("Failed to unmarshal response body")
+			}
+
+			log.Printf("Instance response: %s", responseBody)
+
+			switch responseBody.Status {
+			// Step 2a: if backend instance is paused, starting the backend instance and holding frontend connections until backend instance is active.
+			// In this example, we are using 22 retries with 15 seconds interval to check backend instance status.
+			case sidecar.PAUSED:
+				log.Printf("Instance is paused, waking up instance")
+				sidecarClient.StartInstance(responseBody.InstanceID)
+			case sidecar.ACTIVE:
+				fallthrough
+			case sidecar.STARTING:
+				serverlessTargetPort = os.Getenv("TARGET_PORT")
+				if serverlessTargetPort == "" {
+					log.Printf("Failed to get serverless target port")
+					return
+				}
+
+				serverlessResourceKey := os.Getenv("SERVERLESS_RESOURCE_KEY")
+				if serverlessResourceKey == "" {
+					log.Printf("Failed to get serverless resource key")
+					return
+				}
+
+				log.Printf("Instance is %s, trying to dial TCP.", responseBody.Status)
+
+				for _, sc := range responseBody.ServiceComponents {
+					if strings.Contains(sc.Alias, serverlessResourceKey) {
+						hostName = serverlessResourceKey + "." + responseBody.InstanceID
+						hostName = hostName + ":" + serverlessTargetPort
+						// Step 3: connect to backend serverless resource server
+						backendConnection, err = net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
+						if err != nil {
+							log.Printf("Remote connection failed: %s", err)
+						}
+						break
+					}
+				}
+			default:
+				log.Printf("Instance is not in expected status %s, exiting...", responseBody.Status)
+				return
+			}
+
+			if responseBody.Status == sidecar.ACTIVE {
+				break
+			}
+
+			if responseBody.Status != sidecar.STARTING && responseBody.Status != sidecar.PAUSED {
+				break
+			}
+
+			if responseBody.Status == sidecar.STARTING && backendConnection != nil {
+				break
+			}
+
+			time.Sleep(5 * time.Second)
+			retryCount++
+
+			defer func() {
+				if response != nil {
+					if closeErr := response.Body.Close(); closeErr != nil {
+						log.Printf("Failed to close response body: %v", closeErr)
+					}
+				}
+			}()
+		}
 	}
 
-	hostName = hostName + ":" + serverlessTargetPort
-	// Step 3: connect to backend serverless resource server
-	backendConnection, err := net.DialTCP("tcp", nil, getResolvedAddresses(hostName))
-	if err != nil {
-		log.Printf("Remote connection failed: %s", err)
+	if backendConnection == nil {
+		log.Printf("Didn't get backend connection established in time, exiting...")
 		return
 	}
 
