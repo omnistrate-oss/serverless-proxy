@@ -135,6 +135,9 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 			case sidecar.ACTIVE:
 				fallthrough
 			case sidecar.STARTING:
+				fallthrough
+			// If status unknown, still try to connect to avoid system glitch.
+			case sidecar.UNKNOWN:
 				serverlessTargetPort = os.Getenv("TARGET_PORT")
 				if serverlessTargetPort == "" {
 					log.Printf("Failed to get serverless target port")
