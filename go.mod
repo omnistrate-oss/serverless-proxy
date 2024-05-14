@@ -1,6 +1,6 @@
 module github.com/omnistrate/pg-proxy
 
-go 1.20
+go 1.22
 
 require github.com/go-openapi/strfmt v0.21.7
 
