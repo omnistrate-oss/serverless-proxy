@@ -12,7 +12,7 @@ make docker-build
 ## Setup Simple Postgres Serverless With Omnistrate
 
 Pre-requisite:
-Please follow https://github.com/omnistrate/account-setup to setup AWS bootstrap account/role
+Please follow https://github.com/omnistrate-oss/account-setup to setup AWS bootstrap account/role
 
 **Step 1: Import Service Definition From Docker Compose**
 
