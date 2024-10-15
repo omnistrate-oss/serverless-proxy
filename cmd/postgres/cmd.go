@@ -18,7 +18,6 @@ import (
 )
 
 /**
- * This is a simple postgres proxy example to show how proxy works with Omnistrate platform. Note!!! This is not a production ready proxy.
  * In high level, the proxy does following steps:
  * 1. Start frontend(end client to proxy) TCP listeners.
  * 2. Discover backend instance's endpoint via mapped proxy port.
