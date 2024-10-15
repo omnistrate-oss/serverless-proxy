@@ -38,6 +38,7 @@ jobs:
           - "generic"
           - "mysql"
           - "postgres"
+      fail-fast: false
 
     concurrency:
       group: package-${{ github.workflow }}-${{ matrix.variant }}-${{ github.head_ref }}
@@ -98,6 +99,7 @@ jobs:
           - "generic"
           - "mysql"
           - "postgres"
+      fail-fast: false
 
     concurrency:
       group: package-multi-arch-${{ github.workflow }}-${{ matrix.variant }}-${{ github.head_ref }}
