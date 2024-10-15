@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	sidecar "github.com/omnistrate-oss/serverless-proxy/internal/generic"
+	"github.com/omnistrate-oss/serverless-proxy/internal/sidecar"
 )
 
 /**

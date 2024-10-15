@@ -14,11 +14,11 @@ import (
 	"syscall"
 	"time"
 
-	sidecar "github.com/omnistrate-oss/serverless-proxy/internal/postgres"
+	"github.com/omnistrate-oss/serverless-proxy/internal/sidecar"
 )
 
 /**
- * This is a simple generic tcp proxy example to show how proxy works with Omnistrate platform. Note!!! This is not a production ready proxy.
+ * This is a simple postgres proxy example to show how proxy works with Omnistrate platform. Note!!! This is not a production ready proxy.
  * In high level, the proxy does following steps:
  * 1. Start frontend(end client to proxy) TCP listeners.
  * 2. Discover backend instance's endpoint via mapped proxy port.
@@ -45,12 +45,6 @@ func main() {
 		listeners = append(listeners, *listener)
 	}
 
-	defer func() {
-		for _, listener := range listeners {
-			listener.Close()
-		}
-	}()
-
 	// Initialize Omnistrate sidecar sidecarClient
 	var sidecarClient = sidecar.NewClient(context.Background())
 
@@ -72,6 +66,9 @@ func main() {
 	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM)
 	<-chExit
 	log.Println("EXITING...Bye.")
+	for _, listener := range listeners {
+		listener.Close()
+	}
 	os.Exit(1)
 
 }

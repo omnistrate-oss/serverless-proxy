@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	sidecar "github.com/omnistrate-oss/serverless-proxy/internal/mysql"
+	"github.com/omnistrate-oss/serverless-proxy/internal/sidecar"
 	"github.com/pkg/errors"
 )
 
@@ -46,12 +46,6 @@ func main() {
 		listeners = append(listeners, *listener)
 	}
 
-	defer func() {
-		for _, listener := range listeners {
-			listener.Close()
-		}
-	}()
-
 	// Initialize Omnistrate sidecar sidecarClient
 	var sidecarClient = sidecar.NewClient(context.Background())
 
@@ -73,6 +67,9 @@ func main() {
 	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM)
 	<-chExit
 	log.Println("EXITING...Bye.")
+	for _, listener := range listeners {
+		listener.Close()
+	}
 	os.Exit(1)
 
 }
