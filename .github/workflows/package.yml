@@ -2,13 +2,9 @@ name: Package
 
 on:
   push:
-    paths:
-      - build/Dockerfile
     branches: 
     - main
   pull_request:
-    paths:
-      - build/Dockerfile
     branches: 
     - main
   release:
