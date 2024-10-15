@@ -24,16 +24,6 @@ updates:
       interval: "monthly"
   
   - package-ecosystem: "docker"
-    directory: "/cmd/generic/build"
-    schedule:
-      interval: "monthly"
-
-  - package-ecosystem: "docker"
-    directory: "/cmd/mysql/build"
-    schedule:
-      interval: "monthly"
-
-  - package-ecosystem: "docker"
-    directory: "/cmd/postgres/build"
+    directory: "/build"
     schedule:
       interval: "monthly"
