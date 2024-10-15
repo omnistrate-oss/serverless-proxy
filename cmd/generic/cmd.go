@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/omnistrate/pg-proxy/pkg/sidecar"
 	"io"
 	"log"
 	"net"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	sidecar "github.com/omnistrate-oss/serverless-proxy/internal/generic"
 )
 
 /**
@@ -299,7 +300,7 @@ func setResponseBuffer(buffer []byte) (b []byte) {
 func getResolvedAddresses(host string) *net.TCPAddr {
 	addr, err := net.ResolveTCPAddr("tcp", host)
 	if err != nil {
-		log.Printf("ResolveTCPAddr of host:", err)
+		log.Printf("ResolveTCPAddr of host:%s: %s", host, err.Error())
 	}
 	return addr
 }

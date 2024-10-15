@@ -6,15 +6,34 @@
 version: 2
 updates:
 
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups: 
+      github-actions:
+        dependency-type: "production"
+        update-types:
+        - "minor"
+        - "patch"
+
   - package-ecosystem: "gomod" 
     directory: "/" 
     schedule:
       interval: "monthly"
   
-  # Enable version updates for Docker
   - package-ecosystem: "docker"
-    # Look for a `Dockerfile` in the `build` directory
-    directory: "/cmd/build"
-    # Check for updates once a week
+    directory: "/cmd/generic/build"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/cmd/mysql/build"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/cmd/postgres/build"
     schedule:
       interval: "monthly"

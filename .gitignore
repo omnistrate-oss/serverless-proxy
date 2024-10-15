@@ -16,3 +16,11 @@ vendor/
 # Idea files
 *.idea
 *.DS_Store
+
+# Proxy binaries
+/proxy-*
+/coverage.out
+/coverage-report.html
+/coverage-report.txt
+/test-report.json
+/security-report.html

@@ -5,7 +5,7 @@ This code is not intended for production use but can be used as reference.
 ## Build Example Proxy Docker Image
 
 ```
-make docker-build
+make docker-build-generic
 ```
 
 
@@ -20,7 +20,7 @@ Sample docker compose file exist in /dockercompose/postgres_demo.yaml folder
 
 You can import the docker image using the UI using the **Import docker compose** option
 
-![image](https://github.com/omnistrate/pg-proxy/assets/1789738/08a6257c-5877-41cb-a827-7ab23dbe537b)
+![image](https://github.com/omnistrate-oss/serverless-proxy/assets/1789738/08a6257c-5877-41cb-a827-7ab23dbe537b)
 
 
 The docker compose example uses two images: 
@@ -33,13 +33,13 @@ Setup Service Name to **Postgres Serverless**. Using this name is important as t
 
 In Omnistrate console access page, provision a Postgres instance 
 
-<img width="399" alt="Screenshot 2023-11-16 at 2 54 52 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/4a986be0-6ba9-4091-bbfa-67c159b818e9">
+<img width="399" alt="Screenshot 2023-11-16 at 2 54 52 PM" src="https://omnistrate-oss/serverless-proxy/assets/19898780/4a986be0-6ba9-4091-bbfa-67c159b818e9">
 
 **Step 3: Access Postgres instance**
 
 Once Postgres instance is up and running, check the connectivity from access page and get the endpoint/port for connection. Note that the endpoint shown in the page is pointing to the proxy and not directly to the provisioned instance. 
 
-<img width="1626" alt="Screenshot 2023-11-16 at 3 07 26 PM" src="https://github.com/omnistrate/pg-proxy/assets/19898780/1b51d1d3-44c1-45fe-a1f2-be156fac904c">
+<img width="1626" alt="Screenshot 2023-11-16 at 3 07 26 PM" src="https://omnistrate-oss/serverless-proxy/assets/19898780/1b51d1d3-44c1-45fe-a1f2-be156fac904c">
 
 Note that if the instance is not used for some time it will be stopped automatically. 
 

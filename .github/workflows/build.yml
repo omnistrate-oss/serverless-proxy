@@ -1,0 +1,106 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  merge_group:
+    branches: [ main ]
+
+env:
+  CGO_ENABLED: 0
+  GOMAXPROCS: 2
+  
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+ 
+  # linter includes gosec scan 
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+                
+      - name: Set up go
+        timeout-minutes: 10
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cache: true
+
+      - name: Get dependencies
+        timeout-minutes: 10
+        run: make download
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
+          version: v1.60.2
+          args: ./...
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-cache: true
+          only-new-issues: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+                
+      - name: Set up go
+        timeout-minutes: 10
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cache: true
+
+      - name: Get dependencies
+        timeout-minutes: 10
+        run: make download
+        
+      - name: Build
+        timeout-minutes: 10
+        run: make build
+
+      - name: Gotestsum installer
+        uses: autero1/action-gotestsum@v2.0.0
+        with:
+          gotestsum_version: 1.11.0
+
+      - name: Unit test
+        timeout-minutes: 10 
+        run: |
+          gotestsum --format github-actions -- ./... -skip test -cover -coverprofile coverage.out -covermode count
+          go tool cover -func=coverage.out -o coverage-report.txt
+          
+  bump-version:
+    if: github.event_name != 'pull_request' && github.event_name != 'release'
+    needs: [build, lint]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: Bump-Version-'${{ github.workflow }}'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

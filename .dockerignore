@@ -1,0 +1,8 @@
+.dockerignore
+.DS_Store
+.git
+.github
+README.md
+examples
+deploy
+scripts

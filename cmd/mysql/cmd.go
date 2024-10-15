@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/omnistrate/pg-proxy/pkg/sidecar"
+	sidecar "github.com/omnistrate-oss/serverless-proxy/internal/mysql"
 	"github.com/pkg/errors"
 )
 
@@ -310,7 +310,7 @@ func setResponseBuffer(buffer []byte) (b []byte) {
 func getResolvedAddresses(host string) *net.TCPAddr {
 	addr, err := net.ResolveTCPAddr("tcp", host)
 	if err != nil {
-		log.Printf("ResolveTCPAddr of host:", err)
+		log.Printf("ResolveTCPAddr of host:%s: %s", host, err.Error())
 	}
 	return addr
 }

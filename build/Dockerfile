@@ -1,29 +1,38 @@
 # Stage 1: Build
-FROM golang:1.23.2-bullseye as builder
+FROM golang:1.23.2-bullseye AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG PROXYVARIANT
+
+# Set environment variables for build time
+ENV TARGETOS=${TARGETOS}
+ENV TARGETARCH=${TARGETARCH}
+ENV PROXYVARIANT=${PROXYVARIANT}
 
 # Set the Current Working Directory inside the container
 WORKDIR /go/src/pgproxy
 
-# Copy the source from the current directory to the Working Directory inside the container
-COPY . .
+# Copy go.mod and go.sum before other files for dependency caching
+COPY go.mod go.sum ./
 
 RUN echo Fetching project dependencies
 RUN --mount=type=cache,target=/go/pkg/mod \
-    GOOS=${TARGETOS} GOARCH=${TARGETARCH} go mod tidy
+    GOOS=${TARGETOS} GOARCH=${TARGETARCH} go mod download
+
+# Copy the source from the current directory to the Working Directory inside the container
+COPY . .
 
 RUN echo Building and installing the pgproxy service
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 go build  \
-      -o /go/bin/proxyd /go/src/pgproxy/cmd
+      -o /go/bin/proxyd /go/src/pgproxy/cmd/${PROXYVARIANT}
 
 RUN ls -lrt /go/bin/proxyd
 
 # Stage 2: Run
-FROM debian:bullseye AS final
+FROM debian:bullseye-slim AS final
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
