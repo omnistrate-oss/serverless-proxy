@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM golang:1.23.1-bullseye as builder
+FROM golang:1.23.2-bullseye as builder
 
 ARG TARGETOS
 ARG TARGETARCH
