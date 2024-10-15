@@ -4,10 +4,23 @@ This code is not intended for production use but can be used as reference.
 
 ## Build Example Proxy Docker Image
 
-```
-make docker-build-generic
-```
+- Generic proxy example
 
+    ```
+    make docker-build-generic
+    ```
+
+- MySQL proxy example  
+
+    ```
+    make docker-build-generic
+    ```
+    
+- Postgres proxy example
+
+    ```
+    make docker-build-generic
+    ```
 
 ## Setup Simple Postgres Serverless With Omnistrate
 
