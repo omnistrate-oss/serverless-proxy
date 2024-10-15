@@ -300,7 +300,7 @@ func setResponseBuffer(buffer []byte) (b []byte) {
 func getResolvedAddresses(host string) *net.TCPAddr {
 	addr, err := net.ResolveTCPAddr("tcp", host)
 	if err != nil {
-		log.Printf("ResolveTCPAddr of host:%s: %s", host, err.Error())
+		log.Printf("ResolveTCPAddr of host:%s: %v", host, err)
 	}
 	return addr
 }

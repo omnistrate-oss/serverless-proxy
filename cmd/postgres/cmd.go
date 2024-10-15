@@ -35,7 +35,7 @@ func main() {
 	for i := 0; i <= 9; i++ {
 		listenAddr := "0.0.0.0:3000" + strconv.Itoa(i) // #nosec G102
 
-		//Setup frontend TCP listener
+		// Setup frontend TCP listener
 		listener, err := net.ListenTCP("tcp", getResolvedAddresses(listenAddr))
 		if err != nil {
 			log.Printf("Failed to listen: %v", err)
@@ -69,12 +69,10 @@ func main() {
 	}
 
 	chExit := make(chan os.Signal, 1)
-	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
-	select {
-	case <-chExit:
-		log.Println("EXITING...Bye.")
-		os.Exit(1)
-	}
+	signal.Notify(chExit, syscall.SIGINT, syscall.SIGTERM)
+	<-chExit
+	log.Println("EXITING...Bye.")
+	os.Exit(1)
 
 }
 
@@ -158,7 +156,12 @@ func handleClient(frontEndConnection *net.TCPConn, sidecarClient *sidecar.Client
 			// In this example, we are using 22 retries with 15 seconds interval to check backend instance status.
 			case sidecar.PAUSED:
 				log.Printf("Instance is paused, waking up instance")
-				sidecarClient.StartInstance(responseBody.InstanceID)
+				resp, err := sidecarClient.StartInstance(responseBody.InstanceID)
+				if err != nil {
+					log.Printf("Failed to start instance: %v", err)
+					return
+				}
+				defer resp.Body.Close()
 			case sidecar.ACTIVE:
 				fallthrough
 			case sidecar.STARTING:
@@ -286,7 +289,7 @@ func handleResponseConnection(srcChannel, dstChannel *net.TCPConn) {
 		}
 		b := setResponseBuffer(buff[:n])
 
-		n, err = dstChannel.Write(b)
+		_, err = dstChannel.Write(b)
 		if err != nil {
 			log.Printf("Write failed '%s'\n", err)
 			return
@@ -310,7 +313,7 @@ func setResponseBuffer(buffer []byte) (b []byte) {
 func getResolvedAddresses(host string) *net.TCPAddr {
 	addr, err := net.ResolveTCPAddr("tcp", host)
 	if err != nil {
-		log.Printf("ResolveTCPAddr of host:%s: %s", host, err.Error())
+		log.Printf("ResolveTCPAddr of host:%s: %v", host, err)
 	}
 	return addr
 }
