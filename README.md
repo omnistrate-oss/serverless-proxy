@@ -1,6 +1,5 @@
 # Omnistrate Postgres Proxy Example
 This is a simple example to show how to leverage postgres proxy with Omnistrate platform to build serverless product.
-This code is not intended for production use but can be used as reference.
 
 ## Build Example Proxy Docker Image
 
