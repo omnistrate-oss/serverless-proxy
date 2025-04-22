@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM golang:1.24.2-bookwork AS builder
+FROM golang:1.24.2-bookworm AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -32,7 +32,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 RUN ls -lrt /go/bin/proxyd
 
 # Stage 2: Run
-FROM debian:bullseye-slim AS final
+FROM debian:bookworm-slim AS final
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
