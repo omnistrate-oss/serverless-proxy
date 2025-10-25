@@ -1,6 +1,6 @@
 module github.com/omnistrate-oss/serverless-proxy
 
-go 1.24.0
+go 1.25.1
 
 require (
 	github.com/go-openapi/strfmt v0.24.0
