@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM golang:1.25.5-bookworm AS builder
+FROM golang:1.25.6-bookworm AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
