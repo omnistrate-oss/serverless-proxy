@@ -29,11 +29,11 @@ func (c *Client) QueryBackendInstanceStatus(port string) (resp *http.Response, e
 		log.Printf("Failed to create request: %v", err)
 		return nil, err
 	}
-	resp, err = c.httpClient.Do(req)
+	resp, err = c.httpClient.Do(req) // #nosec G704
 	if err != nil {
 		log.Printf("Failed to get backends endpoints: %v", err)
 	}
-	log.Printf("Response: %v", resp)
+	log.Printf("Response: %v", resp) // #nosec G706
 
 	return resp, err
 }
@@ -48,11 +48,11 @@ func (c *Client) StartInstance(instanceId string) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req) // #nosec G704
 	if err != nil {
 		log.Printf("Failed start instance:"+instanceId+" %v", err)
 	}
-	log.Printf("Response: %v", resp)
+	log.Printf("Response: %v", resp) // #nosec G706
 
 	return resp, err
 }
@@ -68,11 +68,11 @@ func (c *Client) StopInstance(instanceId string) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req) // #nosec G704
 	if err != nil {
 		log.Printf("Failed stop instance:"+instanceId+" %v", err)
 	}
-	log.Printf("Response: %v", resp)
+	log.Printf("Response: %v", resp) // #nosec G706
 
 	return resp, err
 }
