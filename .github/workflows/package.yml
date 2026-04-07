@@ -68,7 +68,7 @@ jobs:
 
       - name: Build on ${{ env.PR_PLATFORMS }} only
         timeout-minutes: 10
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./build/Dockerfile
@@ -149,7 +149,7 @@ jobs:
       - name: Build and push multi-arch
         if: ${{ github.event_name != 'pull_request' }}
         timeout-minutes: 20
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./build/Dockerfile
