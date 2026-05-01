@@ -1,9 +1,9 @@
 github.com/go-openapi/errors v0.22.7 h1:JLFBGC0Apwdzw3484MmBqspjPbwa2SHvpDm0u5aGhUA=
 github.com/go-openapi/errors v0.22.7/go.mod h1://QW6SD9OsWtH6gHllUCddOXDL0tk0ZGNYHwsw4sW3w=
-github.com/go-openapi/strfmt v0.26.1 h1:7zGCHji7zSYDC2tCXIusoxYQz/48jAf2q+sF6wXTG+c=
-github.com/go-openapi/strfmt v0.26.1/go.mod h1:Zslk5VZPOISLwmWTMBIS7oiVFem1o1EI6zULY8Uer7Y=
-github.com/go-openapi/testify/v2 v2.4.1 h1:zB34HDKj4tHwyUQHrUkpV0Q0iXQ6dUCOQtIqn8hE6Iw=
-github.com/go-openapi/testify/v2 v2.4.1/go.mod h1:HCPmvFFnheKK2BuwSA0TbbdxJ3I16pjwMkYkP4Ywn54=
+github.com/go-openapi/strfmt v0.26.2 h1:ysjheCh4i1rmFEo2LanhELDNucNzfWTZhUDKgWWPaFM=
+github.com/go-openapi/strfmt v0.26.2/go.mod h1:fXh1e449cyUn2NYuz+wb3wARBUdMl7qPEZwX00nqivY=
+github.com/go-openapi/testify/v2 v2.4.2 h1:tiByHpvE9uHrrKjOszax7ZvKB7QOgizBWGBLuq0ePx4=
+github.com/go-openapi/testify/v2 v2.4.2/go.mod h1:SgsVHtfooshd0tublTtJ50FPKhujf47YRqauXXOUxfw=
 github.com/go-viper/mapstructure/v2 v2.5.0 h1:vM5IJoUAy3d7zRSVtIwQgBj7BiWtMPfmPEgAXnvj1Ro=
 github.com/go-viper/mapstructure/v2 v2.5.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
@@ -13,7 +13,7 @@ github.com/oklog/ulid/v2 v2.1.1/go.mod h1:rcEKHmBBKfef9DhnvX7y1HZBYxjXb0cP5ExxNs
 github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
-golang.org/x/net v0.50.0 h1:ucWh9eiCGyDR3vtzso0WMQinm2Dnt8cFMuQa9K33J60=
-golang.org/x/net v0.50.0/go.mod h1:UgoSli3F/pBgdJBHCTc+tp3gmrU4XswgGRgtnwWTfyM=
-golang.org/x/text v0.34.0 h1:oL/Qq0Kdaqxa1KbNeMKwQq0reLCCaFtqu2eNuSeNHbk=
-golang.org/x/text v0.34.0/go.mod h1:homfLqTYRFyVYemLBFl5GgL/DWEiH5wcsQ5gSh1yziA=
+golang.org/x/net v0.53.0 h1:d+qAbo5L0orcWAr0a9JweQpjXF19LMXJE8Ey7hwOdUA=
+golang.org/x/net v0.53.0/go.mod h1:JvMuJH7rrdiCfbeHoo3fCQU24Lf5JJwT9W3sJFulfgs=
+golang.org/x/text v0.36.0 h1:JfKh3XmcRPqZPKevfXVpI1wXPTqbkE5f7JA92a55Yxg=
+golang.org/x/text v0.36.0/go.mod h1:NIdBknypM8iqVmPiuco0Dh6P5Jcdk8lJL0CUebqK164=
